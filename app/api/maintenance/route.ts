@@ -1,0 +1,104 @@
+import { NextResponse } from "next/server"
+import { sql } from "@/lib/db"
+import { maintenanceSchema } from "@/lib/validations"
+import { calculateNextMaintenanceDate } from "@/lib/utils"
+
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const query = searchParams.get("query")
+
+    let maintenances
+    if (query) {
+      const searchTerm = `%${query}%`
+      maintenances = await sql`
+        SELECT 
+          m.*,
+          json_build_object('id', c.id, 'name', c.name) as client
+        FROM maintenance_orders m
+        JOIN clients c ON m.client_id = c.id
+        WHERE 
+          m.service_title ILIKE ${searchTerm} OR
+          m.equipment ILIKE ${searchTerm} OR
+          m.description ILIKE ${searchTerm} OR
+          c.name ILIKE ${searchTerm}
+        ORDER BY m.start_date DESC
+      `
+    } else {
+      maintenances = await sql`
+        SELECT 
+          m.*,
+          json_build_object('id', c.id, 'name', c.name) as client
+        FROM maintenance_orders m
+        JOIN clients c ON m.client_id = c.id
+        ORDER BY m.start_date DESC
+      `
+    }
+
+    return NextResponse.json(maintenances)
+  } catch (error) {
+    console.error("Error fetching maintenances:", error)
+    return NextResponse.json({ error: "Erro ao buscar manutenções" }, { status: 500 })
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const body = await request.json()
+    
+    const validatedData = maintenanceSchema.parse(body)
+
+    const id = `maint_${Date.now()}`
+    const now = new Date()
+
+    const startDate = validatedData.startDate ? new Date(validatedData.startDate) : now
+    
+    const deliveryDate = validatedData.deliveryDate ? new Date(validatedData.deliveryDate) : null
+
+    let nextMaintenanceDate = null
+    if (deliveryDate) {
+      nextMaintenanceDate = validatedData.nextMaintenanceDate
+        ? new Date(validatedData.nextMaintenanceDate)
+        : calculateNextMaintenanceDate(validatedData.deliveryDate)
+    }
+
+    const nextReminderAt = new Date(startDate)
+    nextReminderAt.setMonth(nextReminderAt.getMonth() + 4)
+
+    const costsJson = JSON.stringify(validatedData.costs || [])
+
+    await sql`
+      INSERT INTO maintenance_orders (
+        id, client_id, equipment, service_title, description, 
+        value, costs, status, start_date, delivery_date, next_maintenance_date,
+        opened_at, next_reminder_at, next_reminder_step, created_at, updated_at
+      )
+      VALUES (
+        ${id},
+        ${validatedData.clientId},
+        ${validatedData.equipment || ''},
+        ${validatedData.serviceTitle || ''},
+        ${validatedData.description || ''},
+        ${validatedData.value},
+        ${costsJson}::jsonb,
+        ${validatedData.status || "ABERTA"},
+        ${startDate},
+        ${deliveryDate},
+        ${nextMaintenanceDate},
+        ${startDate},
+        ${nextReminderAt},
+        'M4',
+        ${now},
+        ${now}
+      )
+    `
+
+    return NextResponse.json({ success: true, id })
+  } catch (error) {
+    console.error("Error creating maintenance:", error)
+    return NextResponse.json({ 
+      error: "Erro ao criar manutenção",
+      details: error instanceof Error ? error.message : "Unknown error" 
+    }, { status: 500 })
+  }
+}
