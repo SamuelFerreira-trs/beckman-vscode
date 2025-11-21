@@ -230,8 +230,8 @@ export function MaintenancesTable() {
       ) : (
         <div className="rounded-lg border border-border bg-card overflow-hidden shadow-sm">
           <div className="px-6 py-3 bg-muted/30 border-b border-border flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
-              Exibindo <span className="font-medium text-foreground">{filteredMaintenances.length}</span> {filteredMaintenances.length === 1 ? "manutenção" : "manutenções"}
+            <p className="text-sm text-muted-foreground flex items-center gap-2">
+              Exibindo {" "} <span className="font-medium text-foreground inline-block">{filteredMaintenances.length}</span> {" "} {filteredMaintenances.length === 1 ? "manutenção" : "manutenções"}
             </p>
             <Badge variant="outline" className="gap-1.5">
               <Clock className="h-3 w-3" />

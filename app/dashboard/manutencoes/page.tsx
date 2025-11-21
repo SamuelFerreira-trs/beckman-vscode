@@ -33,12 +33,12 @@ export default function ManutencoesPage() {
 
       <div className="flex-1 p-8">
         <Tabs defaultValue="overview" className="space-y-10">
-          <TabsList className="bg-card border border-border py-0 my-0">
-            <TabsTrigger value="overview" className="gap-2 px-2 py-2">
+          <TabsList className="bg-card border border-border p-2">
+            <TabsTrigger value="overview" className="gap-2">
               <TrendingUp className="h-4 w-4" />
               Visão Geral
             </TabsTrigger>
-            <TabsTrigger value="table" className="gap-2 mt-0 ml-2 px-1 py-1">
+            <TabsTrigger value="table" className="gap-2">
               <FileText className="h-4 w-4" />
               Todas as Manutenções
             </TabsTrigger>
