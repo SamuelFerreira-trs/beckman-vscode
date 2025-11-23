@@ -233,7 +233,7 @@ export function MaintenancesTable() {
             <p className="text-sm text-muted-foreground flex items-center gap-2">
               Exibindo {" "} <span className="font-medium text-foreground inline-block">{filteredMaintenances.length}</span> {" "} {filteredMaintenances.length === 1 ? "manutenção" : "manutenções"}
             </p>
-            <Badge variant="outline" className="gap-1.5">
+            <Badge variant="ghost" className="gap-1">
               <Clock className="h-3 w-3" />
               Ordenado por data
             </Badge>

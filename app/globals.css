@@ -7,16 +7,32 @@
   /* JR Beckman Brand - Dark Theme */
   --brand-dark-100: #101112;
   --brand-dark-200: #18191b;
+  --brand-dark-300: #202325;
   --brand-dark-400: #272a2d;
-  --brand-dark-700: #5c6166;
+  --brand-dark-500: #2E3135;
+  --brand-dark-600: #363A3E;
+  --brand-dark-700: #43484D;
+  --brand-dark-800: #5C6166;
+  --brand-dark-900: #696E74;
+  --brand-dark-950: #767c81;
+  --brand-dark-1000: #AEB4BA;
+  --brand-dark-1100: #eceef0;
   --brand-light: #eceef0;
 
   /* JR Beckman Accent - Yellow-Green */
   --accent-100: #11120b;
-  --accent-300: #3d3f17;
-  --accent-500: #5a5c27;
-  --accent-700: #d3d655;
-  --accent-900: #eff2b8;
+  --accent-200: #18190F;
+  --accent-300: #262613;
+  --accent-400: #313214;
+  --accent-500: #3D3F17;
+  --accent-600: #4B4C1E;
+  --accent-700: #5A5C27;
+  --accent-800: #6E6F2F;
+  --accent-900: #D3D655;
+  --accent-1000: #C9CC49;
+  --accent-1100: #DCDF5F;
+  --accent-1200: #EFF2B8;
+  
 
   /* Semantic tokens mapped to brand colors */
   --background: #101112;
@@ -52,6 +68,14 @@
   --sidebar-accent-foreground: #101112;
   --sidebar-border: #272a2d;
   --sidebar-ring: #d3d655;
+  --button-primary: #d3d655;
+  --button-primary-foreground: #101112;
+  --button-primary-hover: #c9cc49;
+  --button-secondary-line: #363A3E;
+  --button-secondary-line-foreground: #eceef0;
+  --button-secondary-hover: #202325;
+  --button-tertiary: #363A3E;
+  --button-tertiary-hover: #262613;
 }
 
 .dark {
@@ -129,6 +153,13 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-button-primary: var(--button-primary);
+  --color-button-primary-foreground: var(--button-primary-foreground);
+  --color-button-primary-hover: var(--button-primary-hover);
+  --color-button-secondary-line: var(--button-secondary-line);
+  --color-button-secondary-hover: var(--button-secondary-hover);
+  --color-button-tertiary: var(--button-tertiary);
+  --color-button-tertiary-hover: var(--button-tertiary-hover);
 }
 
 @layer base {

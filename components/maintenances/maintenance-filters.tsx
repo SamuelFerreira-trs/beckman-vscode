@@ -173,8 +173,8 @@ export function MaintenanceFilters({ filters, onFiltersChange, clients }: Mainte
         {/* Advanced Filters */}
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="gap-2 bg-transparent relative">
-              <Filter className="h-4 w-4" />
+            <Button variant="outline" className="gap-2 relative">
+              <Filter className="h-8 w-8" />
               Mais filtros
               {activeFilterCount > 0 && (
                 <Badge

@@ -33,7 +33,7 @@ export default function ManutencoesPage() {
 
       <div className="flex-1 p-8">
         <Tabs defaultValue="overview" className="space-y-10">
-          <TabsList className="bg-card border border-border p-2">
+          <TabsList className="bg-card border border-border p-1">
             <TabsTrigger value="overview" className="gap-2">
               <TrendingUp className="h-4 w-4" />
               Visão Geral
