@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { sql } from "@/lib/db"
+import { prisma } from "@/lib/prisma"
 import { calculateNextMaintenanceDate } from "@/lib/utils"
 
 export async function PATCH(request: Request, { params }: { params: { id: string } }) {
@@ -7,31 +7,31 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     const body = await request.json()
     const now = new Date()
 
+    // Handle status-only update (e.g. from table action)
     if (body.status && !body.serviceTitle) {
       if (body.status === "CONCLUIDA") {
         const deliveryDate = body.deliveryDate ? new Date(body.deliveryDate) : now
         const nextMaintenanceDate = calculateNextMaintenanceDate(deliveryDate)
 
-        await sql`
-          UPDATE maintenance_orders
-          SET 
-            status = ${body.status}, 
-            closed_at = ${now}, 
-            delivery_date = ${deliveryDate},
-            next_maintenance_date = ${nextMaintenanceDate},
-            updated_at = ${now}
-          WHERE id = ${params.id}
-        `
+        await prisma.maintenanceOS.update({
+          where: { id: params.id },
+          data: {
+            status: body.status,
+            closedAt: now,
+            deliveryDate: deliveryDate,
+            nextMaintenanceDate: nextMaintenanceDate,
+          },
+        })
       } else {
-        await sql`
-          UPDATE maintenance_orders
-          SET 
-            status = ${body.status}, 
-            updated_at = ${now}
-          WHERE id = ${params.id}
-        `
+        await prisma.maintenanceOS.update({
+          where: { id: params.id },
+          data: {
+            status: body.status,
+          },
+        })
       }
     } else {
+      // Handle full update (from edit form)
       const {
         clientId,
         equipment,
@@ -45,34 +45,31 @@ export async function PATCH(request: Request, { params }: { params: { id: string
         status,
       } = body
 
-      const costsJson = costs ? JSON.stringify(costs) : "[]"
-
-      const parsedStartDate = startDate ? new Date(startDate) : null
+      const parsedStartDate = startDate ? new Date(startDate) : undefined
       const parsedDeliveryDate = deliveryDate ? new Date(deliveryDate) : null
 
       let calculatedNextMaintenance = null
       if (parsedDeliveryDate) {
         calculatedNextMaintenance = nextMaintenanceDate
           ? new Date(nextMaintenanceDate)
-          : calculateNextMaintenanceDate(deliveryDate)
+          : calculateNextMaintenanceDate(parsedDeliveryDate)
       }
 
-      await sql`
-        UPDATE maintenance_orders
-        SET 
-          client_id = ${clientId},
-          equipment = ${equipment || ''},
-          service_title = ${serviceTitle || ''},
-          description = ${description || ''},
-          value = ${value},
-          costs = ${costsJson}::jsonb,
-          start_date = ${parsedStartDate},
-          delivery_date = ${parsedDeliveryDate},
-          next_maintenance_date = ${calculatedNextMaintenance},
-          status = ${status || "ABERTA"},
-          updated_at = ${now}
-        WHERE id = ${params.id}
-      `
+      await prisma.maintenanceOS.update({
+        where: { id: params.id },
+        data: {
+          clientId,
+          equipment: equipment || null,
+          serviceTitle,
+          description,
+          value,
+          costs: costs || [],
+          startDate: parsedStartDate,
+          deliveryDate: parsedDeliveryDate,
+          nextMaintenanceDate: calculatedNextMaintenance,
+          status: status || "ABERTA",
+        },
+      })
     }
 
     return NextResponse.json({ success: true })
@@ -87,10 +84,9 @@ export async function PATCH(request: Request, { params }: { params: { id: string
 
 export async function DELETE(request: Request, { params }: { params: { id: string } }) {
   try {
-    await sql`
-      DELETE FROM maintenance_orders
-      WHERE id = ${params.id}
-    `
+    await prisma.maintenanceOS.delete({
+      where: { id: params.id },
+    })
 
     return NextResponse.json({ success: true })
   } catch (error) {

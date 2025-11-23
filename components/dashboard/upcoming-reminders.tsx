@@ -55,7 +55,7 @@ export function UpcomingReminders() {
         ) : (
           <div className="space-y-3">
             {reminders.map((reminder) => {
-              const reminderDate = reminder.nextReminderAt ? new Date(reminder.nextReminderAt) : null
+              const reminderDate = reminder.nextMaintenanceDate ? new Date(reminder.nextMaintenanceDate) : null
               const daysUntil = reminderDate
                 ? Math.ceil((reminderDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
                 : 0
@@ -73,7 +73,7 @@ export function UpcomingReminders() {
                     <p className="font-medium text-foreground">{reminder.client.name}</p>
                     <p className="text-sm text-muted-foreground">{reminder.serviceTitle}</p>
                     <div className="mt-2 flex items-center gap-2 text-xs">
-                      <span className="text-muted-foreground">{formatDate(reminder.nextReminderAt)}</span>
+                      <span className="text-muted-foreground">{formatDate(reminder.nextMaintenanceDate)}</span>
                       <span className="rounded-full bg-primary/20 px-2 py-0.5 text-primary">
                         {reminder.nextReminderStep}
                       </span>

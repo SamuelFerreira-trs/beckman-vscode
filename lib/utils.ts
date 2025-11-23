@@ -16,7 +16,11 @@ export function formatDate(date: string | Date | null | undefined, locale = "pt-
       return "-"
     }
 
-    return dateObj.toLocaleDateString(locale)
+    // Adjust for timezone offset to display as UTC
+    const userTimezoneOffset = dateObj.getTimezoneOffset() * 60000
+    const adjustedDate = new Date(dateObj.getTime() + userTimezoneOffset)
+
+    return adjustedDate.toLocaleDateString(locale)
   } catch (error) {
     console.error("[v0] Error formatting date:", error)
     return "-"

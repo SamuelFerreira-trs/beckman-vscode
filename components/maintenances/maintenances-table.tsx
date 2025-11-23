@@ -50,21 +50,21 @@ export function MaintenancesTable() {
       
       const mappedData = data.map((item: any) => ({
         id: item.id,
-        clientId: item.client_id,
+        clientId: item.clientId,
         equipment: item.equipment,
-        serviceTitle: item.service_title,
+        serviceTitle: item.serviceTitle,
         description: item.description,
         value: Number(item.value),
         costs: item.costs || [],
         status: item.status,
-        startDate: item.start_date,
-        deliveryDate: item.delivery_date,
-        nextMaintenanceDate: item.next_maintenance_date,
-        openedAt: item.opened_at,
-        nextReminderAt: item.next_reminder_at,
-        nextReminderStep: item.next_reminder_step,
-        createdAt: item.created_at,
-        updatedAt: item.updated_at,
+        startDate: item.startDate,
+        deliveryDate: item.deliveryDate,
+        nextMaintenanceDate: item.nextMaintenanceDate,
+        openedAt: item.openedAt,
+        nextReminderAt: item.nextReminderAt,
+        nextReminderStep: item.nextReminderStep,
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
         client: item.client
       }))
       

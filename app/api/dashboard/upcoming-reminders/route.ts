@@ -5,13 +5,13 @@ export async function GET() {
   try {
     const reminders = await prisma.maintenanceOS.findMany({
       where: {
-        nextReminderAt: {
+        nextMaintenanceDate: {
           not: null,
         },
       },
       take: 10,
       orderBy: {
-        nextReminderAt: 'asc',
+        nextMaintenanceDate: 'asc',
       },
       include: {
         client: {
