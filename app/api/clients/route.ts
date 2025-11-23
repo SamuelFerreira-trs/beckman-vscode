@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { sql } from "@/lib/db"
+import { prisma } from "@/lib/prisma"
 import { clientSchema } from "@/lib/validations"
 
 export async function GET(request: Request) {
@@ -7,23 +7,23 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const query = searchParams.get("query")
 
-    let clients
+    let whereClause = {}
     if (query) {
-      const searchTerm = `%${query}%`
-      clients = await sql`
-        SELECT * FROM clients
-        WHERE 
-          name ILIKE ${searchTerm} OR
-          phone ILIKE ${searchTerm} OR
-          email ILIKE ${searchTerm}
-        ORDER BY created_at DESC
-      `
-    } else {
-      clients = await sql`
-        SELECT * FROM clients
-        ORDER BY created_at DESC
-      `
+      whereClause = {
+        OR: [
+          { name: { contains: query, mode: 'insensitive' } },
+          { phone: { contains: query, mode: 'insensitive' } },
+          { email: { contains: query, mode: 'insensitive' } },
+        ],
+      }
     }
+
+    const clients = await prisma.client.findMany({
+      where: whereClause,
+      orderBy: {
+        createdAt: 'desc',
+      },
+    })
 
     return NextResponse.json(clients)
   } catch (error) {
@@ -37,22 +37,15 @@ export async function POST(request: Request) {
     const body = await request.json()
     const validatedData = clientSchema.parse(body)
 
-    const id = `client_${Date.now()}`
-    const now = new Date()
+    const client = await prisma.client.create({
+      data: {
+        name: validatedData.name,
+        phone: validatedData.phone,
+        email: validatedData.email,
+      },
+    })
 
-    await sql`
-      INSERT INTO clients (id, name, phone, email, created_at, updated_at)
-      VALUES (
-        ${id},
-        ${validatedData.name},
-        ${validatedData.phone},
-        ${validatedData.email || null},
-        ${now},
-        ${now}
-      )
-    `
-
-    return NextResponse.json({ success: true, id })
+    return NextResponse.json({ success: true, id: client.id })
   } catch (error) {
     console.error("Error creating client:", error)
     return NextResponse.json({ error: "Erro ao criar cliente" }, { status: 500 })

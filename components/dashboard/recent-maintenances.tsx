@@ -23,7 +23,12 @@ export function RecentMaintenances() {
       try {
         const response = await fetch("/api/dashboard/recent-maintenances")
         const data = await response.json()
-        setMaintenances(data)
+        if (Array.isArray(data)) {
+          setMaintenances(data)
+        } else {
+          console.error("API returned non-array data:", data)
+          setMaintenances([])
+        }
       } catch (error) {
         console.error("Error fetching recent maintenances:", error)
       } finally {

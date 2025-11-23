@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server"
-import { sql } from "@/lib/db"
+import { prisma } from "@/lib/prisma"
 
 export async function GET() {
   try {
-    const clients = await sql`
-      SELECT * FROM clients
-      ORDER BY created_at DESC
-      LIMIT 5
-    `
+    const clients = await prisma.client.findMany({
+      take: 5,
+      orderBy: {
+        createdAt: 'desc',
+      },
+    })
     return NextResponse.json(clients)
   } catch (error) {
     console.error("Error fetching recent clients:", error)

@@ -1,0 +1,9 @@
+{
+	"servers": {
+		"antigravity-tk": {
+			"url": "http://localhost:3845/mcp",
+			"type": "http"
+		}
+	},
+	"inputs": []
+}

@@ -23,7 +23,12 @@ export function ClientsTable({ searchQuery = "" }: ClientsTableProps) {
       try {
         const response = await fetch("/api/clients")
         const data = await response.json()
-        setClients(data)
+        if (Array.isArray(data)) {
+          setClients(data)
+        } else {
+          console.error("API returned non-array data:", data)
+          setClients([])
+        }
       } catch (error) {
         console.error("Error fetching clients:", error)
       } finally {

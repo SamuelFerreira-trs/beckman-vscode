@@ -17,7 +17,12 @@ export function RecentClients() {
       try {
         const response = await fetch("/api/dashboard/recent-clients")
         const data = await response.json()
-        setClients(data)
+        if (Array.isArray(data)) {
+          setClients(data)
+        } else {
+          console.error("API returned non-array data:", data)
+          setClients([])
+        }
       } catch (error) {
         console.error("Error fetching recent clients:", error)
       } finally {

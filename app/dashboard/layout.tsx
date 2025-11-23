@@ -1,8 +1,10 @@
 import type React from "react"
-import { Wrench, Users, FileText, LayoutDashboard } from "lucide-react"
+import { Users, FileText, LayoutDashboard } from "lucide-react"
 import Link from "next/link"
 import { GlobalSearch } from "@/components/search/global-search"
 import { Suspense } from "react"
+
+import { Logo } from "@/components/ui/logo"
 
 export default function DashboardLayout({
   children,
@@ -13,9 +15,8 @@ export default function DashboardLayout({
     <div className="flex min-h-screen bg-background">
       {/* Sidebar */}
       <aside className="w-64 border-r border-border bg-card">
-        <div className="flex h-16 items-center border-b border-border px-6">
-          <Wrench className="h-6 w-6 text-primary" />
-          <span className="ml-2 text-lg font-semibold text-foreground">JR Beckman</span>
+        <div className="flex h-16 items-center justify-start border-b border-border px-6">
+          <Logo className="h-8" />
         </div>
         <nav className="space-y-1 p-4">
           <Link

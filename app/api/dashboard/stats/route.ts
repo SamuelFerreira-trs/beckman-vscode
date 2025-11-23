@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { sql } from "@/lib/db"
+import { prisma } from "@/lib/prisma"
 
 export async function GET() {
   try {
@@ -8,33 +8,41 @@ export async function GET() {
     const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59)
 
     // Total clients
-    const clientsResult = await sql`SELECT COUNT(*) as count FROM clients`
-    const totalClients = Number(clientsResult[0].count)
+    const totalClients = await prisma.client.count()
 
     // Monthly maintenances
-    const maintenancesResult = await sql`
-      SELECT COUNT(*) as count 
-      FROM maintenance_orders 
-      WHERE opened_at >= ${startOfMonth} AND opened_at <= ${endOfMonth}
-    `
-    const totalMaintenances = Number(maintenancesResult[0].count)
+    const totalMaintenances = await prisma.maintenanceOS.count({
+      where: {
+        openedAt: {
+          gte: startOfMonth,
+          lte: endOfMonth,
+        },
+      },
+    })
 
     // Monthly revenue
-    const revenueResult = await sql`
-      SELECT COALESCE(SUM(value), 0) as revenue 
-      FROM maintenance_orders 
-      WHERE opened_at >= ${startOfMonth} AND opened_at <= ${endOfMonth}
-      AND status = 'CONCLUIDA'
-    `
-    const monthlyRevenue = Number(revenueResult[0].revenue)
+    const revenueResult = await prisma.maintenanceOS.aggregate({
+      _sum: {
+        value: true,
+      },
+      where: {
+        openedAt: {
+          gte: startOfMonth,
+          lte: endOfMonth,
+        },
+        status: 'CONCLUIDA',
+      },
+    })
+    const monthlyRevenue = Number(revenueResult._sum.value || 0)
 
     // Upcoming reminders
-    const remindersResult = await sql`
-      SELECT COUNT(*) as count 
-      FROM maintenance_orders 
-      WHERE next_reminder_at IS NOT NULL
-    `
-    const upcomingReminders = Number(remindersResult[0].count)
+    const upcomingReminders = await prisma.maintenanceOS.count({
+      where: {
+        nextReminderAt: {
+          not: null,
+        },
+      },
+    })
 
     return NextResponse.json({
       totalClients,

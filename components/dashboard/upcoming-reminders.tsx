@@ -21,7 +21,12 @@ export function UpcomingReminders() {
       try {
         const response = await fetch("/api/dashboard/upcoming-reminders")
         const data = await response.json()
-        setReminders(data)
+        if (Array.isArray(data)) {
+          setReminders(data)
+        } else {
+          console.error("API returned non-array data:", data)
+          setReminders([])
+        }
       } catch (error) {
         console.error("Error fetching reminders:", error)
       } finally {
