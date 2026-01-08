@@ -7,8 +7,16 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    unoptimized: true,
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+    ],
   },
+  // Configurações de segurança para produção
+  poweredByHeader: false,
+  reactStrictMode: true,
 }
 
 export default nextConfig
