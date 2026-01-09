@@ -2,8 +2,9 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { calculateNextMaintenanceDate } from "@/lib/utils"
 
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params
     const body = await request.json()
     const now = new Date()
 
@@ -14,7 +15,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
         const nextMaintenanceDate = calculateNextMaintenanceDate(deliveryDate)
 
         await prisma.maintenanceOS.update({
-          where: { id: params.id },
+          where: { id },
           data: {
             status: body.status,
             closedAt: now,
@@ -24,7 +25,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
         })
       } else {
         await prisma.maintenanceOS.update({
-          where: { id: params.id },
+          where: { id },
           data: {
             status: body.status,
           },
@@ -56,7 +57,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
       }
 
       await prisma.maintenanceOS.update({
-        where: { id: params.id },
+        where: { id },
         data: {
           clientId,
           equipment: equipment || null,
@@ -82,10 +83,11 @@ export async function PATCH(request: Request, { params }: { params: { id: string
   }
 }
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params
     await prisma.maintenanceOS.delete({
-      where: { id: params.id },
+      where: { id },
     })
 
     return NextResponse.json({ success: true })
